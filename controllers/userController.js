@@ -1,7 +1,8 @@
 const User = require('./../models/userModel');
+const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 //getUserById
-exports.getUserById = async(req,res) =>{
+exports.getUserById = catchAsync(async(req,res) =>{
     const user = await User.findById(req.params.id);
     res.status(200).json({
         status:'success',
@@ -9,10 +10,10 @@ exports.getUserById = async(req,res) =>{
             user
         }
     })
-}
+})
+
 //user-register
-exports.register = async(req,res) =>{
-    try{
+exports.register = catchAsync(async(req,res,next) =>{
         const newUser = await User.create({
             name:req.body.name,
             email:req.body.email,
@@ -25,17 +26,12 @@ exports.register = async(req,res) =>{
                 newUser
             }
         })
-    }catch(err){
-        res.status(404).json({
-            status:'fail',
-            message:err.message
-        })
-    }
-}
+    next();
+})
 
 //user-login
 
-exports.login = async(req,res) =>{
+exports.login = catchAsync(async(req,res,next) =>{
     const {email,password} = req.body;
     if(!email || ! password) return res.status(404).json({
         status:'fail',
@@ -52,10 +48,11 @@ exports.login = async(req,res) =>{
         status:'login success',
         token
     })
-}
+    next();
+})
 
 //protect routes
-exports.protect = async(req,res,next) =>{
+exports.protect = catchAsync(async(req,res,next) =>{
     let token;
     if(req.headers.authorization&&req.headers.authorization.startsWith('Bearer')){
         token = req.headers.authorization.split(' ')[1];
@@ -71,10 +68,54 @@ exports.protect = async(req,res,next) =>{
     })
     req.user = currentUser;
     next();
-}
+})
 
 //userProfile
 exports.userProfile = (req,res,next)=>{
     req.params.id = req.user.id;
     next();
 }
+
+//updateMe
+
+exports.updateMe = catchAsync(async(req,res,next) =>{
+        const updateCurrentUser = await User.findByIdAndUpdate(req.user.id,req.body,
+            {new:true,runValidators:true}
+        )
+        res.status(200).json({
+            status:'Data Updated successfully',
+            data:{
+                updateCurrentUser
+            }
+
+        })
+        next();   
+ })
+
+
+//deleteMe
+
+exports.deleteMe = catchAsync(async(req,res,next) =>{
+   
+        const deleteCurrentUser = await User.findByIdAndDelete(req.user.id)
+        res.status(200).json({
+            status:'user deleted'
+        })
+        next();   
+    })
+   
+
+
+// restrictTo
+
+exports.restrictTo = (...roles) =>{
+    return (req,res,next) =>{
+        if(!roles.includes(req.user.role)){
+            return res.status(403).json({
+                message:'You do not have permission to perform this action'
+            })
+        }
+        next();
+    }
+}
+
