@@ -12,7 +12,7 @@ const jobSchema = new mongoose.Schema({
         type:String
     },
     salary:{
-        type:String,
+        type:Number,
         default:'not disclosed'
     },
     location:{
@@ -42,9 +42,13 @@ const jobSchema = new mongoose.Schema({
         default:Date.now()
     },
     
-    industry:{
+    jobCategory:{
         type:String,
-        enum:['engineering','consulting']
+        enum:['IT','Electronics','Business/Management','Graphic Design','Consulting','Information Security','Customer Support']
+    },
+    employmentType:{
+        type: String,
+        enum:['Full-time', 'Short-term', 'Internship', 'Contract']
     },
     aboutCompany:{
         type:String
@@ -53,6 +57,9 @@ const jobSchema = new mongoose.Schema({
         type:mongoose.Schema.ObjectId,
         ref:'User'
     }
+},
+{
+    timestamps:true
 })
 const Job = mongoose.model('Job',jobSchema);
 module.exports = Job;

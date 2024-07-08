@@ -7,4 +7,7 @@ router.get('/',jobController.showAllJobs);
 router.delete('/:id',userController.protect,jobController.deleteJob);
 router.patch('/:id',userController.protect,jobController.updateJob);
 
+//browse jobs by location
+//router.get('/Hyderabad',jobController.)
+
 module.exports = router;
