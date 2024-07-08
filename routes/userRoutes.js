@@ -12,4 +12,8 @@ router.patch('/updateMe',userController.protect,userController.updateMe)
 
 router.delete('/deleteMe',userController.protect,userController.deleteMe)
 
+router.patch('/saved-jobs',userController.protect, userController.saveJob)
+
+router.get('/show-savedJobs',userController.protect, userController.savedJobs)
+
 module.exports = router;

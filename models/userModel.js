@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const Job = require('./jobModel')
 const userSchema = new mongoose.Schema({
     name:{
         type:String,
@@ -35,7 +36,11 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum:['job seeker','employer'],
         default:'job seeker'
-    }
+    },
+    savedJobs:[{
+        type:mongoose.Schema.ObjectId,
+        ref:'Job'
+    }],
 },
 {timestamps:true}
 )

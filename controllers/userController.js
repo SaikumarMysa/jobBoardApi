@@ -119,3 +119,29 @@ exports.restrictTo = (...roles) =>{
     }
 }
 
+//saved-jobs
+//save-jobs
+exports.saveJob = catchAsync(async(req,res,next) =>{
+        const savedJob = await User.findByIdAndUpdate(req.user.id,{$push:{savedJobs:req.body.jobId}},
+        {new:true, runValidators:true});
+        res.status(200).json({
+            status:'Saved to Jobs'
+        })
+    next();
+})
+
+//show-saved-jobs
+
+exports.savedJobs = catchAsync(async(req,res,next) =>{
+    const Jobs = await User.findById(req.user.id);
+    console.log(Jobs)
+    const sjobs =  Jobs.savedJobs;
+    res.status(200).json({
+        status:"saved jobs",
+        data:{
+        sjobs
+        }
+    })
+next();
+})
+
